@@ -1,4 +1,4 @@
-# Contributing to Soenneker.Extensions.Long
+﻿# Contributing to Soenneker.Extensions.Long
 
 We're excited that you're interested in contributing!
 
