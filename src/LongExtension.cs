@@ -32,7 +32,22 @@ public static class LongExtension
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static DateTime ToDateTimeFromUnixTime(this long unixTime)
     {
-        return DateTimeOffset.FromUnixTimeSeconds(unixTime).UtcDateTime;
+        return unixTime.ToDateTimeOffsetFromUnixTime().UtcDateTime;
+    }
+
+    /// <summary>
+    /// Converts a Unix time, expressed as the number of seconds that have elapsed since 1970-01-01T00:00:00Z (the Unix
+    /// epoch), to a corresponding <see cref="DateTimeOffset"/> value.
+    /// </summary>
+    /// <remarks>If <paramref name="unixTime"/> is less than -62,135,596,800 or greater than 253,402,300,799,
+    /// an <see cref="ArgumentOutOfRangeException"/> is thrown.</remarks>
+    /// <param name="unixTime">The number of seconds that have elapsed since 1970-01-01T00:00:00Z (the Unix epoch).</param>
+    /// <returns>A <see cref="DateTimeOffset"/> representing the specified Unix time.</returns>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static DateTimeOffset ToDateTimeOffsetFromUnixTime(this long unixTime)
+    {
+        return DateTimeOffset.FromUnixTimeSeconds(unixTime);
     }
 
     /// <summary>
