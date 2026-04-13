@@ -110,7 +110,7 @@ public static class LongExtension
     /// </remarks>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int DigitCountPositiveOnly(long value)
+    public static int DigitCountPositiveOnly(this long value)
     {
         if (value < 10L)
             return 1;
