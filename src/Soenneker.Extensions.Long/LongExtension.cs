@@ -32,7 +32,8 @@ public static class LongExtension
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static DateTime ToDateTimeFromUnixTime(this long unixTime)
     {
-        return unixTime.ToDateTimeOffsetFromUnixTime().UtcDateTime;
+        return unixTime.ToDateTimeOffsetFromUnixTime()
+                       .UtcDateTime;
     }
 
     /// <summary>
@@ -65,5 +66,89 @@ public static class LongExtension
     {
         // this cast will throw OverflowException if value is out of Int32 range
         return checked((int)value);
+    }
+
+    /// <summary>
+    /// Returns the number of decimal digits in the specified <see cref="long"/> value.
+    /// </summary>
+    /// <param name="value">The value whose digits should be counted.</param>
+    /// <returns>
+    /// The number of digits in the absolute value of <paramref name="value"/>.
+    /// For example, -123 returns 3, and 0 returns 1.
+    /// </returns>
+    /// <remarks>
+    /// This method handles negative values by evaluating their absolute value.
+    /// Special handling is applied for <see cref="long.MinValue"/>, which contains 19 digits.
+    /// </remarks>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int DigitCount(this long value)
+    {
+        if (value >= 0)
+            return DigitCountPositiveOnly(value);
+
+        if (value == long.MinValue)
+            return 19;
+
+        return DigitCountPositiveOnly(-value);
+    }
+
+    /// <summary>
+    /// Returns the number of decimal digits in a non-negative <see cref="long"/> value.
+    /// </summary>
+    /// <param name="value">
+    /// A non-negative value (zero or greater) whose digits should be counted.
+    /// </param>
+    /// <returns>
+    /// The number of digits in <paramref name="value"/>.
+    /// For example, 0 returns 1, and 123 returns 3.
+    /// </returns>
+    /// <remarks>
+    /// This method assumes <paramref name="value"/> is non-negative and does not perform validation.
+    /// Passing a negative value will result in undefined or incorrect behavior.
+    /// Use this method in performance-critical paths where the input is guaranteed to be non-negative.
+    /// </remarks>
+    [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int DigitCountPositiveOnly(long value)
+    {
+        if (value < 10L)
+            return 1;
+        if (value < 100L)
+            return 2;
+        if (value < 1_000L)
+            return 3;
+        if (value < 10_000L)
+            return 4;
+        if (value < 100_000L)
+            return 5;
+        if (value < 1_000_000L)
+            return 6;
+        if (value < 10_000_000L)
+            return 7;
+        if (value < 100_000_000L)
+            return 8;
+        if (value < 1_000_000_000L)
+            return 9;
+        if (value < 10_000_000_000L)
+            return 10;
+        if (value < 100_000_000_000L)
+            return 11;
+        if (value < 1_000_000_000_000L)
+            return 12;
+        if (value < 10_000_000_000_000L)
+            return 13;
+        if (value < 100_000_000_000_000L)
+            return 14;
+        if (value < 1_000_000_000_000_000L)
+            return 15;
+        if (value < 10_000_000_000_000_000L)
+            return 16;
+        if (value < 100_000_000_000_000_000L)
+            return 17;
+        if (value < 1_000_000_000_000_000_000L)
+            return 18;
+
+        return 19;
     }
 }
