@@ -20,14 +20,6 @@ public static class LongExtension
     /// </remarks>
     /// <param name="unixTime">The Unix timestamp to convert, represented as the number of seconds since the Unix Epoch.</param>
     /// <returns>A UTC <see cref="DateTime"/> object representing the same moment in time as the specified Unix timestamp.</returns>
-    /// <example>
-    /// This example shows how to convert a Unix timestamp to a <see cref="DateTime"/>:
-    /// <code>
-    /// long unixTimestamp = 1588305600;
-    /// DateTime dateTime = unixTimestamp.ToDateTimeFromUnixTime();
-    /// Console.WriteLine(dateTime); // Output: 5/1/2020 12:00:00 AM (Depending on the system's time zone, output might vary)
-    /// </code>
-    /// </example>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static DateTime ToDateTimeFromUnixTime(this long unixTime)

@@ -4,7 +4,7 @@
 [![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.extensions.long/codeql.yml?label=CodeQL&style=for-the-badge)](https://github.com/soenneker/soenneker.extensions.long/actions/workflows/codeql.yml)
 
 # ![](https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png) Soenneker.Extensions.Long
-A collection of helpful Long (64 bit integer) extension methods.
+Unix-time conversion, checked `Int32` conversion, and allocation-free decimal digit counts for `long` values.
 
 ## Installation
 
@@ -12,19 +12,42 @@ A collection of helpful Long (64 bit integer) extension methods.
 dotnet add package Soenneker.Extensions.Long
 ```
 
-## Quick start
+## Convert Unix seconds
 
 ```csharp
 using Soenneker.Extensions.Long;
 
-long unixTime = 42;
-var result = unixTime.ToDateTimeFromUnixTime();
+long unixSeconds = 1_588_305_600;
+
+DateTime utc = unixSeconds.ToDateTimeFromUnixTime();
+DateTimeOffset instant = unixSeconds.ToDateTimeOffsetFromUnixTime();
 ```
 
-## Common operations
+Both methods interpret the value as seconds since `1970-01-01T00:00:00Z`, not milliseconds. `ToDateTimeFromUnixTime()` returns a `DateTime` whose `Kind` is `Utc`; `ToDateTimeOffsetFromUnixTime()` returns an offset-zero value for the same instant.
 
-- `ToDateTimeFromUnixTime()` - Converts a Unix timestamp to a `DateTime` in UTC. Returns a UTC `DateTime` object representing the same moment in time as the specified Unix timestamp. This method extends the `long` type, allowing a Unix timestamp (which counts the number of seconds since the Unix Epoch at 00:00:00 UTC on 1 January 1970) to be directly converted into a `DateTime` object.
-- `ToDateTimeOffsetFromUnixTime()` - Converts a Unix time, expressed as the number of seconds that have elapsed since 1970-01-01T00:00:00Z (the Unix epoch), to a corresponding `DateTimeOffset` value. If `unixTime` is less than -62,135,596,800 or greater than 253,402,300,799, an `ArgumentOutOfRangeException` is thrown.
-- `ToInt()` - Converts the specified 64-bit signed integer to a 32-bit signed integer, throwing an `OverflowException` if the value is outside the range of the `Int32` type.
-- `DigitCount()` - Returns the number of decimal digits in the specified `long` value.
-- `DigitCountPositiveOnly()` - Returns the number of decimal digits in a non-negative `long` value. This method assumes `value` is non-negative and does not perform validation.
+The supported Unix-second range is `-62,135,596,800` through `253,402,300,799`. Values outside it throw `ArgumentOutOfRangeException`.
+
+## Narrow to an integer
+
+```csharp
+int count = longCount.ToInt();
+```
+
+`ToInt()` performs a checked conversion. Values below `Int32.MinValue` or above `Int32.MaxValue` throw `OverflowException`; they are not truncated or wrapped.
+
+## Count decimal digits
+
+```csharp
+int digits = (-12345L).DigitCount(); // 5
+int zeroDigits = 0L.DigitCount();    // 1
+```
+
+`DigitCount()` counts digits in the absolute numeric value and does not count the minus sign. It handles the full `long` range, including `long.MinValue`, without converting to a string.
+
+When the caller already guarantees a non-negative value, `DigitCountPositiveOnly()` exposes the shorter fast path:
+
+```csharp
+int digits = positiveValue.DigitCountPositiveOnly();
+```
+
+`DigitCountPositiveOnly()` does not validate its precondition; negative inputs produce an incorrect result. Use `DigitCount()` unless non-negativity is established by the surrounding logic.
